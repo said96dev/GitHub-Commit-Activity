@@ -13,7 +13,7 @@ import {
 
 const ActivityByDay = ({ data }) => {
   return (
-    <Paper style={{ padding: 20, margin: '20px auto', maxWidth: 800 }}>
+    <Paper style={{ padding: 20, margin: '20px auto', maxWidth: 1000 }}>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart
           data={data}

@@ -8,6 +8,8 @@ import {
   TableRow,
   Paper,
   TablePagination,
+  Box,
+  CircularProgress,
 } from '@mui/material'
 import ActivityByDay from './ActivityByDay'
 
@@ -18,6 +20,7 @@ const GitHubComments = ({ owner, repo }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [totalCommits, setTotalCommits] = useState(0)
 
+  // eslint-disable-next-line
   useEffect(() => {
     fetchCommits()
   }, [owner, repo, page, rowsPerPage])
@@ -40,8 +43,9 @@ const GitHubComments = ({ owner, repo }) => {
       }
       const data = await response.json()
       setCommits(data)
-      setLoading(false)
-
+      setTimeout(() => {
+        setLoading(false)
+      }, 1000)
       const totalCount = response.headers
         .get('Link')
         .match(/page=(\d+)>; rel="last"/)
@@ -79,14 +83,24 @@ const GitHubComments = ({ owner, repo }) => {
     }))
     return activityData
   }
+  if (loading) {
+    return (
+      <Box
+        className="flex justify-center items-center"
+        style={{ height: '100vh' }}
+      >
+        <CircularProgress />
+      </Box>
+    )
+  }
 
   return (
-    <div className="App">
-      <h1 className="bg-sky-500 text-3xl text-center py-4 mb-4">
-        GitHub Commit Activity
-      </h1>
-
-      <TableContainer component={Paper} className="p-4">
+    <div className="p-5">
+      <TableContainer
+        style={{ padding: 20, margin: '0px auto', maxWidth: 1000 }}
+        component={Paper}
+        className="p-4 text-center"
+      >
         <Table>
           <TableHead>
             <TableRow>
@@ -98,7 +112,7 @@ const GitHubComments = ({ owner, repo }) => {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center">
+                <TableCell colSpan={3} className="text-center text-xl text-red">
                   Laden...
                 </TableCell>
               </TableRow>
@@ -117,17 +131,17 @@ const GitHubComments = ({ owner, repo }) => {
             )}
           </TableBody>
         </Table>
+        <TablePagination
+          className="mt-4"
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={totalCommits}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </TableContainer>
-      <TablePagination
-        className="mt-4"
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={totalCommits}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
 
       <ActivityByDay data={getActivityData()} />
     </div>
